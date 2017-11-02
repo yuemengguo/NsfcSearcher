@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 指定全局国际化资源文件 -->
+	<constant name="struts.custom.i18n.resources" value="mess"/>
+	<constant name="struts.enable.DynamicMethodInvocation" value="false"/>
+	<constant name="struts.action.extension" value="action"/>
+	<constant name="struts.devMode" value="true"></constant>
+	<constant name="struts.i18n.reload" value="true"></constant>
+	
+	<constant name="struts.devMode" value="true" />
+	<!-- 所有的Action定义都应该放在package下 -->	
+	<package name="crazyit" namespace="/" extends="struts-default">
+		<action name="login" class="com.gym.action.LoginAction">
+			<!-- 定义三个逻辑视图和物理资源之间的映射 -->
+			 <result name="error">/WEB-INF/content/error.jsp</result>
+			<result name="success" type="freemarker">/WEB-INF/content/welcome.ftl</result>  
+		</action>
+		<action name="test" class="com.gym.action.testDemo">
+			<result name="success">/WEB-INF/content/index.html</result>
+		</action>
+		<!-- 首页控制类  -->
+		<action name="index" class="com.gym.action.IndexAction">
+			<result name="success" type="freemarker">/WEB-INF/template/index.ftl</result>
+			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
+		</action>
+		<!-- 结果列表页 -->
+		<action name="list" class="com.gym.action.ListAction" method="write"></action>
+		
+		<action name="result" class="com.gym.action.ListAction">
+			<result name="success" type="freemarker">/WEB-INF/template/list.ftl</result>
+			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
+		</action>  
+		
+		<!-- 结果详情页  -->
+		<action name="project" class="com.gym.action.DetailAction">
+			<result name="success" type="freemarker">/WEB-INF/template/projectDetail.ftl</result>
+			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
+		</action> 
+		
+		<!-- 登陆处理 -->
+		<action name="login" class="com.gym.action.LoginAction">
+			<result name="success" type="freemarker">/WEB-INF/template/login.ftl</result>
+			<result name="index" type="redirect">index.action</result>
+		</action>
+		<action name="register" class="com.gym.action.LoginAction" method="register">
+			<result name="success" type="freemarker">/WEB-INF/template/register.ftl</result>
+		</action>
+		<action name="forget" class="com.gym.action.LoginAction" method="forget">
+			<result name="success" type="freemarker">/WEB-INF/template/forget.ftl</result>
+		</action>
+	
+		<action name="dologin" class="com.gym.action.LoginAction" method="doLogin"></action>
+		<action name="dologout" class="com.gym.action.LoginAction" method=" doLogout"></action>
+		<action name="doregister" class="com.gym.action.LoginAction" method="doRegister"></action>
+		<action name="doforget" class="com.gym.action.LoginAction" method="doForget"></action>
+		<action name="getcheck" class="com.gym.action.LoginAction" method="doForgetCheck"></action>
+		<action name="saveHeart" class="com.gym.action.ListAction" method="saveHeart"></action>
+		
+		<action name="getuser" class="com.gym.action.UserAction" method="userList"></action>
+		<action name="my" class="com.gym.action.UserAction">
+			<result name="success" type="freemarker">/WEB-INF/template/user.ftl</result>
+			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
+			<result name="redirectLogin" type="redirect">login.action</result>
+		</action>
+		<action name="*">
+			<result>/WEB-INF/content/{1}.jsp</result>
+		</action>
+	</package>
+</struts>
