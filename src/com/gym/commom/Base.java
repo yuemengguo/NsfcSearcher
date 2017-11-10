@@ -1,6 +1,7 @@
 package com.gym.commom;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
@@ -65,4 +66,15 @@ public class Base {
     public static String encryptBASE64(byte[] key) throws Exception {   
         return (new BASE64Encoder()).encodeBuffer(key);   
     }  
+    
+    /**
+     * 转换整形时间至字符串时间
+     * @param time
+     * @return
+     */
+    public static String dateFormat(long time) {
+    	SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	String date = sf.format(time);
+    	return date;
+    }
 }

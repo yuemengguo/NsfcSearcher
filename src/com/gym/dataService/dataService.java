@@ -42,6 +42,7 @@ public class dataService {
 //			//注入实例
 //			service = new Service();
 //		}
+		@SuppressWarnings("rawtypes")
 		List list = service.getJdbcTemplate().queryForList(sql, args);
 	
 		return JSONArray.fromObject(list);
@@ -53,6 +54,7 @@ public class dataService {
 			//实例化
 			service = new Service();
 		}
+		@SuppressWarnings("rawtypes")
 		List list = service.getJdbcTemplate().queryForList(sql,args);
 		if(list.size() == 0) {
 			return new JSONObject();

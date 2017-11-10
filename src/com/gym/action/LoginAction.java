@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
-import org.springframework.context.ApplicationContext;
 
 import com.gym.commom.Base;
 import com.gym.dataService.dataService;
@@ -16,7 +15,6 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import net.sf.json.JSONObject;
-import sun.awt.AppContext;
 
 
 public class LoginAction extends ActionSupport{

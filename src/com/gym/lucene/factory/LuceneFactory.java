@@ -1,9 +1,14 @@
 package com.gym.lucene.factory;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -42,6 +47,9 @@ public class LuceneFactory {
 	//定义分词器
 	private static Analyzer analyzer = null;
 	
+	//日志目录
+	private static String fileName = "d:\\log.txt";
+	
 	/*
 	 * 构造方法，读取配置，初始化索引的保存的位置,创建分词器对象
 	 */
@@ -52,6 +60,12 @@ public class LuceneFactory {
 			prop.load(in);
 			indexDir = prop.getProperty("indexDir");
 			analyzer = new IKAnalyzer();
+            File file = new File(fileName);  
+            if (file.exists()) {  
+                 
+               file.delete();  
+            }    
+            file.createNewFile();  
 		} catch (IOException e) {
 			System.out.println("读取配置信息失败：" + e.getMessage());
 		}
@@ -80,6 +94,9 @@ public class LuceneFactory {
 		for(int i=0;i<jsonArray.size();i++) {
 			Document doc = new Document();
 			JSONObject item = jsonArray.getJSONObject(i);
+			
+			System.out.println("创建索引："+item.toString());
+			WriteDate("创建索引："+item.optString("pro_name","N/A"));
 			
 			//遍历字段，获取要创建的索引
 			for(int j=0; j<indexFields.length; j++) {
@@ -255,4 +272,24 @@ public class LuceneFactory {
 		}
 		return jsonArray;
 	}
+	
+	 /** 
+     * 写入创建索引的日志
+     */  
+    private void WriteDate(String content) {
+       SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");	
+       String time = sf.format(new Date());
+       try{  
+           File file = new File(fileName);  
+           if (!file.exists()) {  
+                 
+               System.out.println("日志文件丢失"); 
+           }    
+           BufferedWriter output = new BufferedWriter(new FileWriter(file,true));    
+           output.write(time + "\t"+ content + "\r\n");  
+           output.close();  
+       } catch (Exception ex) {  
+           System.out.println(ex.getMessage());  
+       }     
+    }  
 }
