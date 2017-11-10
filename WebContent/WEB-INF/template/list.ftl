@@ -105,7 +105,7 @@
         			window.location.href="./result.action?key="+key+"&sortName=pro_year";
         		});
         		
-        		$(".pager").click(function(){
+        		$(".showLoading").click(function(){
         			showLoading();
         		})
         	})
@@ -215,18 +215,19 @@
 				<!-- 底部页面-->
 				<footer>
 				    <ul class="pager">
-				        <li class="previous">
+				        <li class="previous" disabled="disabled">
 				        <#if (pageNum == 1) >
-				        <a href="javascript:void(0)" class="disabled">« 上一页</a></li>	
+				        <a href="javascript:void(0)">« 上一页</a></li>	
 				        <#else>    
-					    <a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">« 上一页</a></li>
+					    <a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">« 上一页</a></li>
 				        </#if>
+				        
 				        <#if (pageNum != 1) >
-				        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=1&pageSize=${pageSize}">1</a></li>
+				        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=1&pageSize=${pageSize}">1</a></li>
 					    </#if>
 					    <#if (totalPage<=7) >
 						    <#assign indexBeg = pageNum >
-						    <#assign indexEnd = totalPage >
+						    <#assign indexEnd = totalPage-1 >
 						    <#if (indexBeg <= indexEnd) >
 							    <#list indexBeg..indexEnd as i > 
 								    <#if pageNum == i>	   
@@ -234,8 +235,8 @@
 			  							<a href="javascript:void(0)">${i}</a>
 			  					    </li>
 			  					    <#else>
-			  					    <li class="active">
-			  							<a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${i}&pageSize=${pageSize}">${i}</a>
+			  					    <li>
+			  							<a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${i}&pageSize=${pageSize}">${i}</a>
 			  					    </li>
 			  					    </#if>
 								</#list>
@@ -245,32 +246,34 @@
 					        <li><a href="javascript:void(0)" class="disabled">⋯</a></li>
 					        </#if>
 						    <#if ((pageNum - 2) > 1) >
-					        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 2}&pageSize=${pageSize}">${pageNum - 2}</a></li>
+					        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 2}&pageSize=${pageSize}">${pageNum - 2}</a></li>
 					        </#if>
 					        <#if ((pageNum - 1) > 1) >
-					        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">${pageNum - 1}</a></li>
+					        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">${pageNum - 1}</a></li>
 					        </#if>
 					        
 					        <li class="active"><a href="javascript:void(0)">${pageNum}</a></li>
 					       
 					        <#if ((pageNum + 1) < totalPage) >
-					        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum + 1}&pageSize=${pageSize}">${pageNum + 1}</a></li>
+					        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum + 1}&pageSize=${pageSize}">${pageNum + 1}</a></li>
 					        </#if>
 					        <#if ((pageNum + 2) < totalPage) >
-					        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum + 2}&pageSize=${pageSize}">${pageNum + 2}</a></li>
+					        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum + 2}&pageSize=${pageSize}">${pageNum + 2}</a></li>
 					        </#if>
 					        <#if ((pageNum + 3) < totalPage) >
 					        <li><a href="javascript:void(0)" class="disabled">⋯</a></li>
 					        </#if>
 					    </#if>
 				        <#if (pageNum != totalPage)>
-				        <li><a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${totalPage}&pageSize=${pageSize}">${totalPage}</a></li>
+				        <li><a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${totalPage}&pageSize=${pageSize}">${totalPage}</a></li>
+				        <#else>
+				        <li class="active"><a href="javascript:void(0);">${totalPage}</a></li>
 				        </#if>
 				        <li class="next">
 				        	<#if (pageNum == totalPage) >
 				        	<a href="javascript:void(0)" class="disabled">下一页 »</a>
 				        	<#else>
-				        	<a href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">下一页 »</a>
+				        	<a class="showLoading" href="./result.action?key=${key}&sortName=${sortName}&pageNum=${pageNum - 1}&pageSize=${pageSize}">下一页 »</a>
 				        	</#if>
 				        </li>
 				    </ul>

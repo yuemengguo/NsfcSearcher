@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>
-            搜索列表-国家自然基金深度搜索引擎
+            个人中心-国家自然基金深度搜索引擎
         </title>
         <!-- ZUI 标准版压缩后的 CSS 文件 -->
         <link rel="stylesheet" href="./dist/css/zui.min.css">
