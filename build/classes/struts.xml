@@ -65,6 +65,9 @@
 			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
 			<result name="redirectLogin" type="redirect">login.action</result>
 		</action>
+		
+		<!-- 管理员界面  -->
+		<action name="admin" class="com.gym.action.AdminAction" method="list"></action>
 		<action name="*">
 			<result>/WEB-INF/content/{1}.jsp</result>
 		</action>
