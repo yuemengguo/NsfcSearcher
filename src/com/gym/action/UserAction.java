@@ -1,4 +1,4 @@
-package com.gym.action;
+﻿package com.gym.action;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -171,7 +171,7 @@ public class UserAction extends ActionSupport{
 						"WHERE user_id = ? and pro_id = pro_approvalNumber and " + 
 						"pro_leaderCode = leader_code and pro_organizationCode = org_code GROUP BY pro_approvalNumber " 
 						,userId);
-				totals = pageInfo.getInt("totals");
+				totals = pageInfo.optInt("totals",0);
 				totalPage = totals/pageSize +1;
 				
 				JSONArray jsonArray = dataService.toJSONArray("SELECT " + 
