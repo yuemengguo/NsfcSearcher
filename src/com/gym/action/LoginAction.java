@@ -4,10 +4,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
+import org.springframework.dao.DataAccessException;
 
 import com.gym.commom.Base;
 import com.gym.dataService.dataService;
@@ -25,9 +34,35 @@ public class LoginAction extends ActionSupport{
 	private String password;
 	private String nickName;
 	private PrintWriter out;	
-
+	private String id;
+	private JSONObject errorMessage;
 	private long endTime;
 	private String redirect = "";
+	private String info;
+	private int confirm;
+	public int getConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(int confirm) {
+		this.confirm = confirm;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 	public String getRedirect() {
 		return redirect;
@@ -221,10 +256,25 @@ public class LoginAction extends ActionSupport{
 					json.put("code", 204);//注册失败
 					json.put("message", "注册失败");
 					json.put("email", email);
-					//发送邮箱验证
+					
 				}else {
-					json.put("code", 200);
-					json.put("email", email);
+					//发送邮箱验证
+					
+					JSONObject userInfo = dataService.toJSONObject("select id from nsfc_user where email = ?",email);  
+					JSONObject sendStatus = sendCheckEmal(email,userInfo.getString("id"));
+					String err = sendStatus.optString("err",null);
+					if(err == null) {
+						json.put("code", 200);
+						json.put("email", email);
+					}else {
+						json.put("code", 500);
+						json.put("message", err);
+					    out.println(json);  
+					    out.flush();  
+					    out.close();  
+					    return;
+					}
+
 				}
 			}
 		} catch (Exception e) {
@@ -272,13 +322,17 @@ public class LoginAction extends ActionSupport{
 				json.put("message", "您输入的："+email+" 用户不存在");
 			}else {
 				//处理验证码信息
-				@SuppressWarnings("unused")
 				int checkCode = (int)(Math.random()*8999) + 1000;
-				//发送邮箱验证码 省略。。。。
-				
-				
-				//发送邮箱验证码 省略。。。。
-				json.put("code", 200);
+				//存储验证码：
+				ActionContext.getContext().getSession().put("checkCode", checkCode);
+				JSONObject sendStatus = sendEmailCode(checkCode);
+				String err = sendStatus.optString("err",null);
+				if(err == null) {
+					json.put("code", 200);
+				}else {
+					json.put("code", 500);
+					json.put("message", err);
+				}
 			}
 		} catch (Exception e) {
 			json.put("code", 500);
@@ -321,10 +375,18 @@ public class LoginAction extends ActionSupport{
 		    return;
 		}
 		try {
-			//检查验证码 省略。。。。
 			//code:209验证码错误
-			
-			//检查验证码 省略。。。。
+			int checkCode = (int) ActionContext.getContext().getSession().get("checkCode");
+			if(checkCode != confirm) {
+				json.put("code", 209);
+				json.put("message", "验证码错误");
+			    out.println(json);  
+			    out.flush();  
+			    out.close();  
+			    return;
+			}
+			//清空验证码
+			ActionContext.getContext().getSession().remove("checkCode");
 			MessageDigest md = MessageDigest.getInstance("MD5");
 	        // 计算md5函数
 	        md.update(password.getBytes());
@@ -336,13 +398,12 @@ public class LoginAction extends ActionSupport{
 			if(res == 0) {
 				json.put("code", 207);
 				json.put("message", "修改失败");
-				//发送邮箱验证
 			}else {
 				json.put("code", 200);
 			}
 		} catch (Exception e) {
 			json.put("code", 500);
-			json.put("message", e.getMessage());
+			json.put("message", e.getMessage()== null ? "服务器错误":e.getMessage());
 		    out.println(json);  
 		    out.flush();  
 		    out.close();  
@@ -362,18 +423,56 @@ public class LoginAction extends ActionSupport{
 	}
 	
 	/**
-	 * 发送邮箱验证
+	 * 发送注册邮箱验证
+	 * @return 
 	 */
-	public void  sendCheckEmal() {
-		
+	public JSONObject  sendCheckEmal(String toUser, String id) {
+		JSONObject json = new JSONObject();
+		endTime = System.currentTimeMillis() + 1800000;
+		String strContent = email+"|"+endTime;
+		try {
+			String info = Base.encryptBASE64(strContent.getBytes());
+			String url = "http://localhost:8080/NsfcSearcher/checkEmail.action?id="+id+"&info="+info;
+			String content = "请点击链接，进行验证<br/>"+url;
+			json = sendSimpleMail(toUser,content,"邮箱验证");
+		} catch (Exception e) {
+			json.put("message", e.getMessage());
+			json.put("code", "500");
+			return json;
+		}
+		return json;
 	}
 	
 	/*
-	 * 验证邮箱
+	 * 验证注册邮箱
 	 */
-	public void checkEmail() {
-		
-	
+	public String checkEmail() { 
+		try {
+			//目前存在bug
+			
+//			String endTimeStr = Base.decryptBASE64(info).toString().split("|")[1];
+//			long endTime = Long.parseLong(endTimeStr);
+//			if(endTime < System.currentTimeMillis()) {
+//				errorMessage.put("errorMessage", "链接失效");
+//				errorMessage.put("code", "500");
+//				return ERROR;
+//			}
+			//目前存在bug
+			
+			int count = dataService.getTemplate().update("update nsfc_user set status =1 where id = ?",id);
+			if(count > 0) {
+				return SUCCESS;
+			}else {
+				errorMessage.put("errorMessage", "验证失败");
+				errorMessage.put("code", "500");
+				return ERROR;
+			}
+		} catch (Exception e) {
+			errorMessage.put("errorMessage", e.getMessage());
+			errorMessage.put("code", "500");
+			return ERROR;
+		}
+
 	}
 	
 	public String execute() {
@@ -390,19 +489,66 @@ public class LoginAction extends ActionSupport{
 	 * 发用邮箱验证码
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	private JSONObject sendEmail() {
+	private JSONObject sendEmailCode(int checkCode) {
 		JSONObject json = new JSONObject();
-		endTime = System.currentTimeMillis() + 1800000;
-		String strContent = email+"|"+endTime;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String dateTime = sdf.format(new Date());
 		try {
-			String content = Base.encryptBASE64(strContent.getBytes());
-			//暂时未实现
-			
+	        String contentText = "尊敬的用户:<br/>    您好！<br/>    您于{1}在NSFC系统成功提交了邮箱发送验证码的请求，验证码为：{2}为了保证您的账号安全，该验证码有效期为30分钟。若不是您本人操作，请忽略此邮件或拨打咨询热线：17621096799。感谢您使用！本邮件由系统自动发出，请勿回复。<br/>【NSFC开发团队】"; 
+	        //邮件的文本内容
+	        contentText = contentText.replace("{1}",dateTime);
+	        contentText = contentText.replace("{2}", String.valueOf(checkCode));
+			json = sendSimpleMail(email,contentText,"邮箱验证码");
 		} catch (Exception e) {
 			json.put("err", e.getMessage());
 			return json;
 		}
 		return json;
 	}
+	
+	private JSONObject sendSimpleMail(String user,String content,String subject) {
+		JSONObject json = new JSONObject();
+		Properties prop = new Properties();
+        prop.setProperty("mail.host", "smtp.163.com");
+        prop.setProperty("mail.transport.protocol", "smtp");
+        prop.setProperty("mail.smtp.auth", "true");
+        //使用JavaMail发送邮件的5个步骤
+        //1、创建session
+        Session session = Session.getInstance(prop);
+        //开启Session的debug模式，这样就可以查看到程序发送Email的运行状态
+        session.setDebug(true);
+        //2、通过session得到transport对象
+        Transport ts;
+		try {
+			ts = session.getTransport();
+
+        //3、使用邮箱的用户名和密码连上邮件服务器，发送邮件时，发件人需要提交邮箱的用户名和密码给smtp服务器，用户名和密码都通过验证之后才能够正常发送邮件给收件人。
+	        ts.connect("smtp.163.com", "guoyuemeng1022", "guo941102");
+	        //4、创建邮件
+	        Message message = createSimpleMail(session,user,content,subject);
+	        //5、发送邮件
+	        ts.sendMessage(message, message.getAllRecipients());
+	        ts.close();
+		} catch (Exception e) {
+			json.put("err", e.getMessage());
+			return json;
+		}
+		return json;
+	}
+	
+	 private MimeMessage createSimpleMail(Session session,String user,String content,String subject)
+	            throws Exception {
+	        //创建邮件对象
+	        MimeMessage message = new MimeMessage(session);
+	        //指明邮件的发件人
+	        message.setFrom(new InternetAddress("guoyuemeng1022@163.com"));
+	        //指明邮件的收件人，现在发件人和收件人是一样的，那就是自己给自己发
+	        message.setRecipient(Message.RecipientType.TO, new InternetAddress(user));
+	        //邮件的标题
+	        message.setSubject(subject);
+
+	        message.setContent(content, "text/html;charset=UTF-8");
+	        //返回创建好的邮件对象
+	        return message;
+	    }
 }

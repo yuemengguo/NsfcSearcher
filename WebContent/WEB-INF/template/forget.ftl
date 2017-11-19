@@ -119,7 +119,8 @@
 		                    type: "post",
 		                    data: {
 		                        "email":email,
-		                        "password":password
+		                        "password":password,
+		                        "confirm":confirm
 		                    },
 		                    async: "false",
 		                    dataType: "json",
@@ -133,6 +134,16 @@
 		                    		$('#myModal').modal();
 		                    		$("#modal-title").css({"color":"yellow"});
 		                    		$("#modal-title").text("警告");
+		                    		$("#modal-message").text(data.message);
+		                    	}else if(data.code == 209){
+		                    		$('#myModal').modal();
+		                    		$("#modal-title").css({"color":"yellow"});
+		                    		$("#modal-title").text("警告");
+		                    		$("#modal-message").text(data.message);
+		                    	}else if(data.code == 500){
+		                    		$('#myModal').modal();
+		                    		$("#modal-title").css({"color":"red"});
+		                    		$("#modal-title").text("服务器错误");
 		                    		$("#modal-message").text(data.message);
 		                    	}
 		                    	$("#confirmBtn").text("确认更改");
@@ -180,7 +191,7 @@
 				  <div class="form-group">
 				    <label for="confirmInput" class="col-xs-2 required fixLabel">验证码</label>
 				    <div class="col-md-6 col-xs-10">
-				      <input type="password" class="form-control setWidth" id="confirmInput" placeholder="邮箱验证码">
+				      <input type="text" class="form-control setWidth" id="confirmInput" placeholder="邮箱验证码">
 				    </div>
 				  </div>
 				  <br/>

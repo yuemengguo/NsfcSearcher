@@ -57,6 +57,10 @@
 		<action name="doregister" class="com.gym.action.LoginAction" method="doRegister"></action>
 		<action name="doforget" class="com.gym.action.LoginAction" method="doForget"></action>
 		<action name="getcheck" class="com.gym.action.LoginAction" method="doForgetCheck"></action>
+		<action name="checkEmail" class="com.gym.action.LoginAction" method="checkEmail">
+			<result name="success" type="freemarker">/WEB-INF/template/checkmail.ftl</result>
+			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>
+		</action>
 		<action name="saveHeart" class="com.gym.action.ListAction" method="saveHeart"></action>
 		
 		<action name="getuser" class="com.gym.action.UserAction" method="userList"></action>

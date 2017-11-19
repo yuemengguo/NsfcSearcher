@@ -1,13 +1,14 @@
 package com.gym.action;
 
+import com.gym.commom.Base;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class testDemo extends ActionSupport{
 	
-	private static final long serialVersionUID = -1897666459714278752L;
-
-	public String execute() throws Exception{
-		System.out.println("ok");
-		return SUCCESS;
+	public static void main(String[] args) throws Exception {
+		String str = "sdfsdfsdfsdf";
+		String ii = Base.encryptBASE64("str".getBytes());
+		System.out.println(ii);
+//
 	}
 }	

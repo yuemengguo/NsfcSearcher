@@ -1,4 +1,4 @@
-﻿package com.gym.action;
+package com.gym.action;
 
 import java.io.IOException;
 import java.io.PrintWriter;
