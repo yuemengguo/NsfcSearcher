@@ -18,7 +18,6 @@ import net.sf.json.JSONObject;
 public class AdminAction extends ActionSupport{
 
 	private static final long serialVersionUID = -4847173831521511903L;
-	private JSONArray userList;
 	private PrintWriter out;
 	public void list() {
 		HttpServletResponse response=ServletActionContext.getResponse();  

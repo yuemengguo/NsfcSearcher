@@ -59,6 +59,7 @@ public class LuceneFactory {
 		try {
 			prop.load(in);
 			indexDir = prop.getProperty("indexDir");
+			fileName = prop.getProperty("fileName", "c:\\log.txt");
 			analyzer = new IKAnalyzer();
             File file = new File(fileName);  
             if (file.exists()) {  

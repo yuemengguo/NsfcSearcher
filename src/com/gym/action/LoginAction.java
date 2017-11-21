@@ -1,6 +1,8 @@
 package com.gym.action;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -16,9 +18,9 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
-import org.springframework.dao.DataAccessException;
 
 import com.gym.commom.Base;
+import com.gym.dataService.Service;
 import com.gym.dataService.dataService;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
@@ -509,23 +511,26 @@ public class LoginAction extends ActionSupport{
 	private JSONObject sendSimpleMail(String user,String content,String subject) {
 		JSONObject json = new JSONObject();
 		Properties prop = new Properties();
-        prop.setProperty("mail.host", "smtp.163.com");
-        prop.setProperty("mail.transport.protocol", "smtp");
-        prop.setProperty("mail.smtp.auth", "true");
-        //使用JavaMail发送邮件的5个步骤
-        //1、创建session
-        Session session = Session.getInstance(prop);
-        //开启Session的debug模式，这样就可以查看到程序发送Email的运行状态
-        session.setDebug(true);
-        //2、通过session得到transport对象
+		InputStream in = new BufferedInputStream (Service.class.getClassLoader().getResourceAsStream("config.properties"));
         Transport ts;
 		try {
+			prop.load(in);
+//			prop.setProperty("mail.host", "smtp.163.com");
+//	        prop.setProperty("mail.transport.protocol", "smtp");
+//	        prop.setProperty("mail.smtp.auth", "true");
+			
+	        //使用JavaMail发送邮件的5个步骤
+	        //1、创建session
+	        Session session = Session.getInstance(prop);
+	        //开启Session的debug模式，这样就可以查看到程序发送Email的运行状态
+	        session.setDebug(true);
+	        //2、通过session得到transport对象
 			ts = session.getTransport();
 
-        //3、使用邮箱的用户名和密码连上邮件服务器，发送邮件时，发件人需要提交邮箱的用户名和密码给smtp服务器，用户名和密码都通过验证之后才能够正常发送邮件给收件人。
-	        ts.connect("smtp.163.com", "guoyuemeng1022", "guo941102");
+            //3、使用邮箱的用户名和密码连上邮件服务器，发送邮件时，发件人需要提交邮箱的用户名和密码给smtp服务器，用户名和密码都通过验证之后才能够正常发送邮件给收件人。
+	        ts.connect(prop.getProperty("mail.host"), prop.getProperty("mail.user"), prop.getProperty("mail.pass"));
 	        //4、创建邮件
-	        Message message = createSimpleMail(session,user,content,subject);
+	        Message message = createSimpleMail(session,user,content,subject,prop.getProperty("mail.from"),prop.getProperty("mail.nick"));
 	        //5、发送邮件
 	        ts.sendMessage(message, message.getAllRecipients());
 	        ts.close();
@@ -536,12 +541,12 @@ public class LoginAction extends ActionSupport{
 		return json;
 	}
 	
-	 private MimeMessage createSimpleMail(Session session,String user,String content,String subject)
+	 private MimeMessage createSimpleMail(Session session,String user,String content,String subject,String from,String nick)
 	            throws Exception {
 	        //创建邮件对象
 	        MimeMessage message = new MimeMessage(session);
 	        //指明邮件的发件人
-	        message.setFrom(new InternetAddress("guoyuemeng1022@163.com"));
+	        message.setFrom(new InternetAddress(nick+" <"+from+">"));
 	        //指明邮件的收件人，现在发件人和收件人是一样的，那就是自己给自己发
 	        message.setRecipient(Message.RecipientType.TO, new InternetAddress(user));
 	        //邮件的标题
