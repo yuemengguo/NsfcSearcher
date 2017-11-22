@@ -35,7 +35,7 @@ xsi:schemaLocation="
   	p:driverClassName="com.mysql.jdbc.Driver" 
 	p:url="jdbc:mysql://localhost:3307/lucene?characterEncoding=UTF8"
   	p:username="root"
-    p:password="guo941102" >
+    p:password="123456" >
     </bean>
  	<bean name="service" class="com.gym.dataService.Service"></bean>
   </beans>
