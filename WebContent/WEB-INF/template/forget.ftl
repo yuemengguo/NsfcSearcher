@@ -72,6 +72,7 @@
 		                    async: "false",
 		                    dataType: "json",
 		                    success: function (data) {
+		                    data = $.parseJSON(data);
 		                    	if(data.code == 200){
 		                    		$('#myModal').modal();
 				            		$("#modal-title").css({"color":"blue"});
@@ -125,6 +126,7 @@
 		                    async: "false",
 		                    dataType: "json",
 		                    success: function (data) {
+		                        data = $.parseJSON(data);
 		                    	if(data.code == 200){
 		                    		$('#myModal').modal();
 		                    		$("#modal-title").css({"color":"blue"});

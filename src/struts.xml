@@ -13,6 +13,9 @@
 	<constant name="struts.devMode" value="true" />
 	<!-- 所有的Action定义都应该放在package下 -->	
 	<package name="crazyit" namespace="/" extends="struts-default">
+		<result-types>
+	           <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+	    </result-types>
 		<action name="login" class="com.gym.action.LoginAction">
 			<!-- 定义三个逻辑视图和物理资源之间的映射 -->
 			 <result name="error">/WEB-INF/content/error.jsp</result>
@@ -52,11 +55,34 @@
 			<result name="success" type="freemarker">/WEB-INF/template/forget.ftl</result>
 		</action>
 	
-		<action name="dologin" class="com.gym.action.LoginAction" method="doLogin"></action>
-		<action name="dologout" class="com.gym.action.LoginAction" method=" doLogout"></action>
-		<action name="doregister" class="com.gym.action.LoginAction" method="doRegister"></action>
-		<action name="doforget" class="com.gym.action.LoginAction" method="doForget"></action>
-		<action name="getcheck" class="com.gym.action.LoginAction" method="doForgetCheck"></action>
+		<action name="dologin" class="com.gym.action.LoginAction" method="doLogin">
+		      <result type ="json">
+		          <param name = "root">
+		          result
+		          </param>
+		      </result>
+		</action>
+		<action name="dologout" class="com.gym.action.LoginAction" method=" doLogout">
+		<result type = "json">
+		      <param name = "root">result</param>
+		</result>
+		</action>
+		<action name="doregister" class="com.gym.action.LoginAction" method="doRegister">
+		<result type="json">  
+                              这里指定将被Struts2序列化的属性，该属性在action中必须有对应的getter方法  
+                <param name="root">result</param>  
+        </result> 
+        </action>
+		<action name="doforget" class="com.gym.action.LoginAction" method="doForget">
+			 <result type = "json">
+	               <param name = "root">result</param>
+	         </result>
+		</action>
+		<action name="getcheck" class="com.gym.action.LoginAction" method="doForgetCheck">
+		      <result type = "json">
+		       <param name = "root">result</param>
+		      </result>
+		</action>
 		<action name="checkEmail" class="com.gym.action.LoginAction" method="checkEmail">
 			<result name="success" type="freemarker">/WEB-INF/template/checkmail.ftl</result>
 			<result name="error" type="freemarker">/WEB-INF/template/error.ftl</result>

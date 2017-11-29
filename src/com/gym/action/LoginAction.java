@@ -1,30 +1,22 @@
 package com.gym.action;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.gym.commom.Base;
 import com.gym.dataService.Service;
 import com.gym.dataService.dataService;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
 import net.sf.json.JSONObject;
 
 
@@ -35,12 +27,12 @@ public class LoginAction extends ActionSupport{
 	private String email;
 	private String password;
 	private String nickName;
-	private PrintWriter out;	
 	private String id;
 	private JSONObject errorMessage;
 	private long endTime;
 	private String redirect = "";
 	private String info;
+	private String result;
 	private int confirm;
 	public int getConfirm() {
 		return confirm;
@@ -82,6 +74,15 @@ public class LoginAction extends ActionSupport{
 		this.email = email;
 	}
 
+	
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -93,32 +94,8 @@ public class LoginAction extends ActionSupport{
 	/**
 	 * 登陆请求
 	 */
-	public void doLogin() {
-		HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
-		response.setContentType("text/html;charset=utf-8");
-		
-		// 指定允许其他域名访问
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		// 响应头设置  
-		response.setHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
-//	    response.setCharacterEncoding("UTF-8");  
+	public String doLogin() {
 		JSONObject json = new JSONObject();
-		try {
-			out = response.getWriter();
-		} catch (IOException e1) {
-			json.put("code", 500);
-			json.put("error", true);
-			json.put("message", e1.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close(); 
-		    return;
-		}
 		try {
 			JSONObject res = dataService.toJSONObject("select * from nsfc_user where email = ? limit 1", email);
 			if(res.has("id")) {
@@ -155,48 +132,18 @@ public class LoginAction extends ActionSupport{
 		} catch (Exception e) {
 			json.put("code", 500);
 			json.put("message", e.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close();  
-		    return;
-		} 			
-	    out.println(json);  
-	    out.flush();  
-	    out.close();  
+			return ERROR;
+		} 
+		result = json.toString();
+		return SUCCESS;
 	}
 	
-	public void doLogout() {
-		HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
-		response.setContentType("text/html;charset=utf-8");
-		
-		// 指定允许其他域名访问
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		// 响应头设置  
-		response.setHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
-//	    response.setCharacterEncoding("UTF-8");  
+	public String doLogout() {
 		JSONObject json = new JSONObject();
-		try {
-			out = response.getWriter();
-			json.put("code", 200);
-		} catch (IOException e1) {
-			json.put("code", 500);
-			json.put("error", true);
-			json.put("message", e1.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close(); 
-		    return;
-		}
+		json.put("code", 200);
 		ActionContext.getContext().getSession().clear();
-		
-	    out.println(json);  
-	    out.flush();  
-	    out.close();  
+		result = json.toString();
+		return SUCCESS;
 	}
 	
 	
@@ -211,59 +158,33 @@ public class LoginAction extends ActionSupport{
 	/**
 	 * 用户注册
 	 */
-	public void doRegister() {
-		HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
-		response.setContentType("text/html;charset=utf-8");
-		// 指定允许其他域名访问
-	    response.setHeader("Access-Control-Allow-Origin", "*");
-		// 响应头设置  
-	    response.setHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
-//	    response.setCharacterEncoding("UTF-8");  
+	public String  doRegister() {
 		JSONObject json = new JSONObject();
 		try {
-			out = response.getWriter();
-		} catch (IOException e1) {
-			json.put("code", 500);
-			json.put("message", e1.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close(); 
-		    return;
-		}
-		try {
 			//先查用户是否存在
-			JSONObject count = dataService.toJSONObject("select id from nsfc_user where email = ? ",email);
-			if(count.size() > 0) {
+			JSONObject data= dataService.toJSONObject("select id from nsfc_user where email = ? ",email);
+			if(!data.optString("id").equals("")) {
 				json.put("code", 205);//注册失败
 				json.put("message", "您输入的："+email+" 邮箱已经被注册");
 				json.put("email", email);
 			}else {
 				//处理用户注册信息
 				nickName = email.split("@")[0] + "_m";//以邮箱名字加下划线+m的形式命名昵称
-				
 				MessageDigest md = MessageDigest.getInstance("MD5");
 		        // 计算md5函数
-		        md.update(password.getBytes());
+		        md.update(password.getBytes()); 
 		        // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
 		        // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
 		        password = new BigInteger(1, md.digest()).toString(16);
-				
 				int res = dataService.getTemplate().update("insert into nsfc_user set email= ?, nickName= ? ,password=? ",email,nickName,password);
 				if(res == 0) {
 					json.put("code", 204);//注册失败
 					json.put("message", "注册失败");
 					json.put("email", email);
-					
 				}else {
 					//发送邮箱验证
-					
 					JSONObject userInfo = dataService.toJSONObject("select id from nsfc_user where email = ?",email);  
-					JSONObject sendStatus = sendCheckEmal(email,userInfo.getString("id"));
+					JSONObject sendStatus = sendCheckEmal(email,userInfo.optString("id"));
 					String err = sendStatus.optString("err",null);
 					if(err == null) {
 						json.put("code", 200);
@@ -271,51 +192,20 @@ public class LoginAction extends ActionSupport{
 					}else {
 						json.put("code", 500);
 						json.put("message", err);
-					    out.println(json);  
-					    out.flush();  
-					    out.close();  
-					    return;
 					}
-
 				}
 			}
 		} catch (Exception e) {
 			json.put("code", 500);
 			json.put("message", e.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close();  
-		    return;
-		} 			
-	    out.println(json);  
-	    out.flush();  
-	    out.close(); 
+			return ERROR;
+		} 		
+		result = json.toString();
+	    return  SUCCESS;
 	}
 	
-	public void doForgetCheck() {
-		HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
-		response.setContentType("text/html;charset=utf-8");
-		// 指定允许其他域名访问
-	    response.setHeader("Access-Control-Allow-Origin", "*");
-		// 响应头设置  
-	    response.setHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
-//	    response.setCharacterEncoding("UTF-8");  
+	public String doForgetCheck() {
 		JSONObject json = new JSONObject();
-		try {
-			out = response.getWriter();
-		} catch (IOException e1) {
-			json.put("code", 500);
-			json.put("message", e1.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close(); 
-		    return;
-		}
 		try {
 			//先查用户是否存在
 			JSONObject count = dataService.toJSONObject("select id from nsfc_user where email = ? ",email);
@@ -339,63 +229,30 @@ public class LoginAction extends ActionSupport{
 		} catch (Exception e) {
 			json.put("code", 500);
 			json.put("message", e.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close();  
-		    return;
+		    return ERROR;
 		} 			
-	    out.println(json);  
-	    out.flush();  
-	    out.close(); 
+	  result = json.toString();
+	  return SUCCESS;
 	}
 	
 	/**
 	 * 处理密码重置
 	 */
-	public void doForget() {
-		HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
-		response.setContentType("text/html;charset=utf-8");
-		// 指定允许其他域名访问
-	    response.setHeader("Access-Control-Allow-Origin", "*");
-		// 响应头设置  
-	    response.setHeader("Access-Control-Allow-Headers", "x-requested-with,content-type");
-//	    response.setCharacterEncoding("UTF-8");  
+	public String doForget() {
 		JSONObject json = new JSONObject();
-		try {
-			out = response.getWriter();
-		} catch (IOException e1) {
-			json.put("code", 500);
-			json.put("message", e1.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close(); 
-		    return;
-		}
 		try {
 			//code:209验证码错误
 			int checkCode = (int) ActionContext.getContext().getSession().get("checkCode");
 			if(checkCode != confirm) {
 				json.put("code", 209);
 				json.put("message", "验证码错误");
-			    out.println(json);  
-			    out.flush();  
-			    out.close();  
-			    return;
 			}
 			//清空验证码
 			ActionContext.getContext().getSession().remove("checkCode");
+			//加密
 			MessageDigest md = MessageDigest.getInstance("MD5");
-	        // 计算md5函数
 	        md.update(password.getBytes());
-	        // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
-	        // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
 	        password = new BigInteger(1, md.digest()).toString(16);
-			
 			int res = dataService.getTemplate().update("update nsfc_user set password=? where email = ? ",password,email);
 			if(res == 0) {
 				json.put("code", 207);
@@ -406,14 +263,10 @@ public class LoginAction extends ActionSupport{
 		} catch (Exception e) {
 			json.put("code", 500);
 			json.put("message", e.getMessage()== null ? "服务器错误":e.getMessage());
-		    out.println(json);  
-		    out.flush();  
-		    out.close();  
-		    return;
+		    return ERROR;
 		} 			
-	    out.println(json);  
-	    out.flush();  
-	    out.close(); 
+	  result = json.toString();
+	  return SUCCESS;
 	}
 	
 	public String forget() {
@@ -450,17 +303,6 @@ public class LoginAction extends ActionSupport{
 	 */
 	public String checkEmail() { 
 		try {
-			//目前存在bug
-			
-//			String endTimeStr = Base.decryptBASE64(info).toString().split("|")[1];
-//			long endTime = Long.parseLong(endTimeStr);
-//			if(endTime < System.currentTimeMillis()) {
-//				errorMessage.put("errorMessage", "链接失效");
-//				errorMessage.put("code", "500");
-//				return ERROR;
-//			}
-			//目前存在bug
-			
 			int count = dataService.getTemplate().update("update nsfc_user set status =1 where id = ?",id);
 			if(count > 0) {
 				return SUCCESS;
@@ -496,7 +338,9 @@ public class LoginAction extends ActionSupport{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		String dateTime = sdf.format(new Date());
 		try {
-	        String contentText = "尊敬的用户:<br/>    您好！<br/>    您于{1}在NSFC系统成功提交了邮箱发送验证码的请求，验证码为：{2}为了保证您的账号安全，该验证码有效期为30分钟。若不是您本人操作，请忽略此邮件或拨打咨询热线：17621096799。感谢您使用！本邮件由系统自动发出，请勿回复。<br/>【NSFC开发团队】"; 
+	        String contentText = "尊敬的用户:<br/>    您好！<br/>    您于{1}在NSFC系统成功提交了邮箱发送验证码的请求，"
+	        		+ "验证码为：{2}为了保证您的账号安全，该验证码有效期为30分钟。若不是您本人操作，请忽略此邮件或拨打咨询热线："
+	        		+ "17621096799。感谢您使用！本邮件由系统自动发出，请勿回复。<br/>【NSFC开发团队】"; 
 	        //邮件的文本内容
 	        contentText = contentText.replace("{1}",dateTime);
 	        contentText = contentText.replace("{2}", String.valueOf(checkCode));
@@ -551,7 +395,6 @@ public class LoginAction extends ActionSupport{
 	        message.setRecipient(Message.RecipientType.TO, new InternetAddress(user));
 	        //邮件的标题
 	        message.setSubject(subject);
-
 	        message.setContent(content, "text/html;charset=UTF-8");
 	        //返回创建好的邮件对象
 	        return message;

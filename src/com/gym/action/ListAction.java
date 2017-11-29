@@ -44,8 +44,7 @@ public class ListAction extends ActionSupport{
 	}
 
 	public void setKey(String key) throws UnsupportedEncodingException {
-		byte[] b=key.getBytes("ISO-8859-1");//用tomcat的格式（iso-8859-1）方式去读。
-		this.key=new String(b,"utf-8");//采用utf-8去接string
+	    this.key = key;
 		System.out.println(this.key);
 	}
 
@@ -119,29 +118,14 @@ public class ListAction extends ActionSupport{
 	 */
 	public void write() throws IOException{  
 	    HttpServletResponse response=ServletActionContext.getResponse();  
-	    /* 
-	     * 在调用getWriter之前未设置编码(既调用setContentType或者setCharacterEncoding方法设置编码), 
-	     * HttpServletResponse则会返回一个用默认的编码(既ISO-8859-1)编码的PrintWriter实例。这样就会 
-	     * 造成中文乱码。而且设置编码时必须在调用getWriter之前设置,不然是无效的。 
-	     * */  
 	    response.setContentType("text/html;charset=utf-8");  
-//	    response.setCharacterEncoding("UTF-8");  
 	    PrintWriter out = response.getWriter();  
-//	    JSONObject json = new JSONObject();
-//	    json.put("code", 200);
-//	    json.put("message", "返回json数据");
-//	    
-//	    Map<String, Object> session = actionContext.getSession();
-//	    session.put("userId", "5");
-//	    JSONObject userMessage = Base.checkPassport();
-//	    json.put("userMessage", userMessage);
 
 	    JSONObject json = new JSONObject();
 		JSONObject request = formatRequest();
 		String[][] indexFields = {{"pro_approvalNumber","1"},{"pro_name","0"},{"leader_name","0"},{"pro_type","0"},{"org_ChineseName","0"},{"org_EnglishName","0"},{"pro_ChineseAbstract","2"},{"pro_ChineseSubjectWord","2"},{"pro_EnglishAbstract","2"},{"pro_EnglishSubjectWord","0"},{"pro_year","2"}};
 		String[] searchFields = {"pro_approvalNumber","pro_name","leader_name","org_ChineseName","pro_year"};
 
-		
 		//检查用户登陆
 		JSONObject userCheck = Base.checkPassport();
 		if(userCheck.getInt("onlineStatus") == 1) {
@@ -228,7 +212,9 @@ public class ListAction extends ActionSupport{
 	public String execute() {
 
 		JSONObject request = formatRequest();
-		String[][] indexFields = {{"pro_approvalNumber","1"},{"pro_name","0"},{"leader_name","0"},{"pro_type","0"},{"org_ChineseName","0"},{"org_EnglishName","0"},{"pro_ChineseAbstract","2"},{"pro_ChineseSubjectWord","2"},{"pro_EnglishAbstract","2"},{"pro_EnglishSubjectWord","0"},{"pro_year","2"}};
+		String[][] indexFields = {{"pro_approvalNumber","1"},{"pro_name","0"},{"leader_name","0"},
+				{"pro_type","0"},{"org_ChineseName","0"},{"org_EnglishName","0"},{"pro_ChineseAbstract","2"},
+				{"pro_ChineseSubjectWord","2"},{"pro_EnglishAbstract","2"},{"pro_EnglishSubjectWord","0"},{"pro_year","2"}};
 		String[] searchFields = {"pro_approvalNumber","pro_name","leader_name","org_ChineseName","pro_year"};
 
 		//检查用户登陆
@@ -242,7 +228,7 @@ public class ListAction extends ActionSupport{
 				System.out.println(e.getMessage());
 				return ERROR; 
 			}
-			userInfo.put("onlineStatus", 1);
+			userInfo.put("onlineStatus", 1);	
 		}else {
 			userInfo.put("onlineStatus", 0);
 		}

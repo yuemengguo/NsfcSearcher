@@ -88,6 +88,7 @@
 			                    dataType: "json",
 			                    success: function (data) {
 			                    	console.log(data);
+                            data = $.parseJSON(data);
 			                    	if(data.code == 200){
 			                    		$('#myModal').modal();
 			                    		$("#modal-title").css({"color":"blue"});

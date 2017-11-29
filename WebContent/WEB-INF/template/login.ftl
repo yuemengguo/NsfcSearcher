@@ -90,6 +90,7 @@
 		                    async: "false",
 		                    dataType: "json",
 		                    success: function (data) {
+		                    data = $.parseJSON(data);
 		                    	if(data.code == 200){
 		                    		console.log("登陆成功");
 		                    		window.location.href="./index.action";
