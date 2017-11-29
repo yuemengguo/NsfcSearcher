@@ -169,8 +169,7 @@ public class UserAction extends ActionSupport{
 				JSONObject pageInfo = dataService.toJSONObject("SELECT count(*) as totals " +  
 						"FROM nsfc_project_all, nsfc_leader_all ,nsfc_organization_all ,nsfc_heart " + 
 						"WHERE user_id = ? and pro_id = pro_approvalNumber and " + 
-						"pro_leaderCode = leader_code and pro_organizationCode = org_code GROUP BY pro_approvalNumber " 
-						,userId);
+						"pro_leaderCode = leader_code and pro_organizationCode = org_code" ,userId);
 				totals = pageInfo.optInt("totals",0);
 				totalPage = totals/pageSize +1;
 				
@@ -178,8 +177,7 @@ public class UserAction extends ActionSupport{
 						"pro_approvalNumber,pro_name,pro_year,pro_type,pro_ChineseAbstract,leader_name,org_ChineseName,leader_organization,leader_jobTitle  " + 
 						"FROM nsfc_project_all, nsfc_leader_all ,nsfc_organization_all ,nsfc_heart " + 
 						"WHERE user_id = ? and pro_id = pro_approvalNumber and " + 
-						"pro_leaderCode = leader_code and pro_organizationCode = org_code GROUP BY pro_approvalNumber " + 
-						"ORDER BY pro_year desc limit ?,? ", userId,offset,pageSize);
+						"pro_leaderCode = leader_code and pro_organizationCode = org_code ORDER BY pro_year desc limit ?,? ", userId,offset,pageSize);
 				listInfo.put("items", jsonArray);
 				System.out.println(jsonArray);
 			} catch (DataAccessException | IOException e) {
